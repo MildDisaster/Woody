@@ -1,0 +1,11 @@
+screen -t nvidia-smi watch nvidia-smi
+screen -t ethminer ~/mine_eth.sh
+
+altscreen on
+term screen-256color
+bind ',' prev
+bind '.' next
+
+hardstatus alwayslastline
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W}%c %{g}]'
+

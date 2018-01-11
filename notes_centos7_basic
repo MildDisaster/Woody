@@ -1,0 +1,57 @@
+#
+# Recipe : Create centos7 basic nvidia ethminer
+#
+# Jan 10, 2018
+#
+# Standard caveats : no selinux or firewall 
+#
+# For headless operation, no overlock ability yet
+# Currently running certain nvidia-settings options under xinits puts GPUs into a P8 state which is bad for mining
+# Cheap remedy is to reboot
+
+
+# Install some packages
+yum install deltarpm vim wget screen
+yum groupinstall "X Window System"
+
+# Install elrepo for less driver headaches
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.repo.noarch.rpm
+yum install kmod-nvidia
+
+# For mindfulness
+reboot
+
+# Prop up a xorg.conf, it will be ugly, and probably necessary to figure out overclocking later
+nvidia-xconfig -a --coolbits=28 --allow-empty-initial-configuration
+
+# Test.  Any onboard GPU needs to be disabled, either in BIOS, or by unplugging cable to monitor.
+xinit /usr/bin/nvidia-settings -q gpus -- :0 -once
+
+# Fetch the mining software
+wget https://github.com/ethereum-mining/ethminer/releases/download/v0.13.0rc3/ethminer-0.13.0rc3-Linux.tar.gz
+tar -xvxf etherminer-0.13.0rc3-Linux.tar.gz
+
+# Create a startup script, and a config for screen so we can have pretty windows and feel warm inside, examples in /files
+touch mine_eth.sh
+touch .screenrc_mine_eth
+chmod a+x min_eth.sh
+
+#
+#  Optional Items
+#
+
+# If running risers or somesuch, and getting spam notifications about PCI bus errors, you can squelch with
+vim /etc/default/grub
+
+# replace the string "quiet" with "quiet pci=noaer" for the GRUB_CMDLINE_LINUX_DEFAULT entry
+grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# or for UEFI
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg
+
+# rebuild the initramfs
+cp /boot/initramfs-$(uname -r).img /boot/initramfs-$(uname -r).img.bak
+dracut -f
+
+
