@@ -8,6 +8,8 @@
 # For headless operation, no overlock ability yet
 # Currently running certain nvidia-settings options under xinits puts GPUs into a P8 state which is bad for mining
 # Cheap remedy is to reboot
+#
+# Strongly recommend creating a distinct user to run ethminer with, driver install done as root
 
 
 # Install some packages
